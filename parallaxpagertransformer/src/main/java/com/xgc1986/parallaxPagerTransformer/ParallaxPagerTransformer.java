@@ -1,8 +1,8 @@
 package com.xgc1986.parallaxPagerTransformer;
 
+import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -27,13 +27,20 @@ public class ParallaxPagerTransformer implements ViewPager.PageTransformer {
         View parallaxView = view.findViewById(item.getId());
 
         if (parallaxView == null) {
-            Log.w("ParallaxPager", "There is no view");
             return;
         }
 
         if (position > -1 && position < 1) {
             float width = parallaxView.getWidth();
-            parallaxView.setTranslationX(-(position * width * item.getSpeed()));
+            float speed = item.getSpeed();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if (view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+                    speed = speed * -1;
+                }
+            }
+
+            parallaxView.setTranslationX(-(position * width * speed));
             float sc = ((float) view.getWidth() - mBorder) / view.getWidth();
             if (position == 0) {
                 view.setScaleX(1);
